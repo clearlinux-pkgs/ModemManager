@@ -1,0 +1,3 @@
+Configure miss: whether to build with code coverage support
+Configure miss: vapigen
+Configure miss: libsystemd-login >= 183

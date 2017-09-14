@@ -1,0 +1,284 @@
+
+ModemManager 1.6.8
+-------------------------------------------
+This is a new bugfix release of ModemManager.
+
+Among other things fixed:
+
+ * Blacklist:
+   ** Ignored default Linux USB Serial Gadget.
+
+ * QMI:
+   ** Fixed build with libqmi 1.16.
+   ** Allow prefix match for modem images ending with '?'.
+
+ * Plugins:
+   ** Telit: fix #PSNT values interpretation for HSDPA and LTE modems.
+   ** Telit: add LTE access technology reporting.
+   ** Huawei: let the E3372 run NDISDUP via TTY.
+   ** MBM: fix async method completion enabling unsolicited events.
+
+ * Core:
+   ** AT+WS46=? response parser extended to support ranges.
+   ** Fix setting up signal quality retrieval logic.
+
+
+ModemManager 1.6.6
+-------------------------------------------
+This is a new bugfix release of ModemManager.
+
+Among other things fixed:
+
+ * Blacklist:
+   ** Ignored keyboard.io devices.
+   ** Ignored Analog Devices EVAL-ADXL362Z-DB.
+   ** Ignored promotion boards from Renesas.
+   ** Ignored Analog PlutoSDR.
+   ** Ignored Telit LE866 flashing device.
+
+ * Plugins:
+   ** Telit: fix AT+SERVICE 3GPP2 access technology reporting.
+   ** Telit: lock/unlock CSIM operations by default.
+   ** Telit: don't ignore AT ports without an explicit port type hint tag.
+   ** Cinterion: improve ^SMONG and ^SCFG=? response parsers.
+   ** Huawei: implement Signal interface based on ^HCSQ.
+   ** QMI: require FCC auth if InvalidTransition error is detected.
+   ** QMI: fix incorrect use of mm_base_bearer_get_status().
+   ** QMI: add WDS event reporting support.
+   ** MBIM: remove parent access tech loading.
+
+ * Core:
+   ** Added RSCP item in the Signal interface.
+   ** Implement Signal interface in the generic AT based modem based on ^CESQ.
+   ** Improve network registration checks for LTE devices.
+   ** Handle SDIO devices.
+   ** Fix QCDM access tech reporting for WCDMA system modes.
+   ** Fix capabilities in 4G-only devices.
+   ** Set TTY as connected as soon as ATD replies.
+
+ * and some other fixes...
+
+
+ModemManager 1.6.4
+-------------------------------------------
+This is a new bugfix release of ModemManager.
+
+Among other things fixed:
+
+ * Blacklist:
+   ** Ignored new Infineon flashloader devices.
+   ** Ignored Sigma Sport docking stations.
+
+ * Core:
+   ** USSD: don't rely on lock status to allow actions.
+   ** 3GPP: always use 300s by default in the network scan operation.
+   ** Build: limit the available glib functionality to the version supported.
+
+ * Plugins:
+   ** telit: add support for the Telit GE910.
+   ** zte: fix SUBSYSTEMS and ATTRS{idVendor} checks.
+
+ * and some other minor fixes...
+
+ModemManager 1.6.2
+-------------------------------------------
+This is a new bugfix release of ModemManager.
+
+Among other things fixed:
+ * Huawei: fix setting up unsolicited voice messages
+ * Blacklist: ignored u-blox GPS/GLOSNASS USB dongle and some new Arduinos.
+ * ZTE: avoid making udev rules tty-only.
+ * and some other minor fixes...
+
+
+ModemManager 1.6.0
+-------------------------------------------
+This is a new stable release of ModemManager.
+
+ * This version requires:
+   ** GLib 2.36.0
+   ** gettext 0.19.3
+   ** libmbim >= 1.14.0 (for the optional MBIM support)
+   ** libqmi >= 1.16.0 (for the optional QMI support)
+   ** libsystemd >= 209 or libsystemd-login >= 183 (for the optional suspend
+      and resume support)
+
+ * For distributions using systemd, it is suggested that the new optional
+   suspend/resume is explicitly requested during configure with the new
+   '--with-suspend-resume=systemd' argument.
+
+This version comes with the following new features:
+
+ * Core:
+   ** Implemented support for suspend/resume detection, currently working
+      when systemd is in use. Whenever the system is suspended, we'll flag the
+      modems as invalid so that they are re-probed from scratch when the system
+      is resumed.
+   ** Added cancellation support for the probing operations.
+   ** Reworked and simplified the serial port response processing.
+
+ * Location interface:
+   ** Added A-GPS support, currently available only for QMI based modems with
+      PDS service.
+   ** Added support for updating the default GPS refresh time.
+
+ * Time interface:
+   ** New default implementation for all AT-based modems.
+
+ * Voice interface:
+   ** New DBus interface to allow the management of voice calls, which currently
+      assumes that the audio channel is setup out of ModemManager.
+
+ * Bearer:
+   ** New support for reporting statistics of the ongoing connection with a new
+      'Stats' property, currently available for QMI and MBIM based modems.
+
+ * QMI:
+   ** Implemented support for devices which only work in "raw IP" mode, like
+      the Sierra MC7455.
+   ** Implemented support for SIM related operations using the UIM service, as
+      newer modems with multi-SIM capabilities don't suppor the legacy DMS UIM
+      operations.
+   ** Implemented support for detecting network-initiated disconnections.
+
+ * MBIM:
+   ** If online mode fails, try to use the 'DMS Set FCC Authentication' QMI
+      message via the QMI-over-MBIM support, if supported by the device.
+
+ * udev:
+   ** Added new supported 'ID_MM_PORT_IGNORE' tag to allow fully ignoring ports
+      specified by the user.
+
+ * mmcli:
+   ** Added command completion.
+   ** Added new operations to use the Voice interface.
+   ** Added new operations to manage the A-GPS settings.
+
+ * Build:
+   ** Added code coverage support.
+
+ * Plugins:
+   ** haier: new plugin to support the Haier CE81B.
+   ** thuraya: new plugin for Thuraya satellite modems.
+   ** sierra-legacy,sierra: the implementation for Sierra modems is now split
+      into two different plugins: a 'legacy' one for the old PPP and DirectIP
+      based modems and the standard one for the newer QMI and MBIM based ones.
+   ** dell: new plugin for Dell rebranded devices from Novatel, Sierra or
+      Ericsson.
+   ** gobi: removed the plugin. All non-vendor specific QMI devices should now
+      be managed by the generic plugin.
+   ** mbm: dynamically load the list of supported modes.
+   ** mbm: fixed several connection/disconnection issues.
+   ** simtech: support QMI devices.
+   ** huawei: implemented Voice call management support.
+   ** huawei: use static IP addressing in NDISDUP capable devices if the AT^DHCP
+      response provides the IP details.
+
+The following features which were backported to 1.4.x releases are also present
+in ModemManager 1.6.0:
+
+ * MBIM:
+   ** The mbim-proxy is used by default.
+   ** Implemented support for disconnection status notification while connected.
+   ** Disabled CDMA capabilities, until properly supported.
+
+ * QMI:
+   ** The qmi-proxy is used by default.
+   ** If online mode fails, use 'DMS Set FCC Authentication', required by some
+      rebranded Sierra modems (e.g. Dell branded ones).
+   ** Implemented support for loading SIM operator id and name.
+   ** Implemented power-cycle reset functionality.
+
+ * Plugins:
+   ** telit: added support for new devices, like HE910, UE910 and UL865.
+   ** telit: implemented dynamic port identification.
+   ** telit: implemented unlock retries loading.
+   ** telit: implemented supported/current bands management.
+   ** telit: implemented supported/current modes management.
+   ** telit: implemented modem reset and power down.
+   ** mbm: implemented GPS support for Ericsson HS2350 and H5321gw modems.
+
+
+ModemManager 1.4.0
+-------------------------------------------
+This is a new stable release of ModemManager.
+
+ * This version requires libmbim >= 1.10.0.
+
+This version comes with the following updates in the interfaces:
+
+ * Updated the logic around the IP configuration properties in the Bearer:
+   ** Setting DHCP as IP method in the IPv6 settings means that SLAAC should
+      be used to retrieve correct addressing and routing details.
+   ** DHCP IP method may now be combined with an explicit static IP address, as
+      IPv6 SLAAC may require the link-local address to be present.
+   ** MTU is now also included in the IP configuration properties, if specified
+      by the modem, and applicable to both DHCP and STATIC methods.
+ * New 'OFF' power state, which fully switches off the modem device. After
+   setting the modem in this state, no further use of it can be done. Currently
+   available in Wavecom and Cinterion.
+ * Location interface: new 'unmanaged GPS' support, which allows to start/stop
+   the GPS module in the modem, while leaving the location information retrieval
+   to other processes. Currently available in modems with independent GPS TTYs,
+   like Option/HSO, Cinterion and Huawei.
+ * New Test DBus interface: not to be installed, just for internal system tests.
+
+Other notable changes include:
+ * MBIM: support for ZTE and Sequans Communications modems.
+ * Ericsson MBM: Support for AT-capable /dev/cdc-wdm ports.
+ * Huawei: improved support for Network time retrieval.
+ * Huawei: implemented GPS support.
+ * Huawei: support for /dev/cdc-wdm AT ports via the new huawei-cdc-ncm driver.
+ * Cinterion: implemented GPS support.
+ * Cinterion: implemented unlock retries loading.
+ * Cinterion: gather port types for multi-tty devices.
+ * Cinterion: custom wait for SIM readiness after SIM-PIN unlock.
+ * Wavecom: custom wait for SIM readiness after SIM-PIN unlock.
+ * Probing: new flag to identify hotplugged devices which don't need full reset.
+ * Tests: internal refactor of the ports handling code, allowing test-driven
+   virtual ports and system tests run during 'make check'. This new feature also
+   comes with a new internal 'Test' DBus interface, as well as new --test-[*]
+   options in the ModemManager program.
+ * and many more fixes...
+
+
+ModemManager 1.2.0
+-------------------------------------------
+This is a new stable release of ModemManager.
+
+This version comes with the following updates in the interfaces:
+
+ * Signal interface: new interface for extended signal quality information
+ * OMA interface: new interface to expose the Device Management capabilities
+   defined by the Open Mobile Alliance
+ * Messaging interface: new 'Messages' property
+ * Modem interface: new 'Bearers' property
+ * 3GPP interface: new 'SubscriptionState' property
+
+Other notable changes include:
+
+ * QMI: Implemented Manual CDMA activation logic
+ * QMI: Implemented 3GPP2/CDMA SMS support
+ * QMI: Added support for QMI modems in the ZTE, x22x and Cinterion plugins.
+ * Huawei: multiple improvements and fixes for the ^NDISDUP support
+ * Huawei: new mode/switching logic with ^SYSCFGEX for LTE-capable devices
+ * Altair-LTE: set subscription state based on PCO
+ * MediaTek: new 'mtk' plugin added for MediaTek devices
+ * libmm-glib: Added GObject Introspection and Vala support
+ * and many more fixes...
+
+
+ModemManager 1.0.0
+-------------------------------------------
+
+This is a new stable release of ModemManager.  Notable changes include:
+
+* More flexible D-Bus API that accounts for the capabilities of modern devices
+* Native support for Gobi and QMI-based Qualcomm devices via libqmi
+* Native support for MBIM-based devices via libmbim
+* Preliminary support for GPS-based Location Services with some devices
+* More complete messaging API
+* New libmm-glib client library
+* New fully-featured command-line client (mmcli)
+* systemd integration
+* and much more...
