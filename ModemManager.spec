@@ -4,7 +4,7 @@
 #
 Name     : ModemManager
 Version  : 1.6.10
-Release  : 2
+Release  : 3
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.6.10.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.6.10.tar.xz
 Summary  : Common headers provided by ModemManager
@@ -110,7 +110,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1508440304
+export SOURCE_DATE_EPOCH=1508628463
 %configure --disable-static --without-mbim --without-qmi
 make V=1  %{?_smp_mflags}
 
@@ -122,7 +122,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1508440304
+export SOURCE_DATE_EPOCH=1508628463
 rm -rf %{buildroot}
 %make_install
 %find_lang ModemManager
