@@ -4,7 +4,7 @@
 #
 Name     : ModemManager
 Version  : 1.6.12
-Release  : 5
+Release  : 6
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.6.12.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.6.12.tar.xz
 Summary  : Common headers provided by ModemManager
