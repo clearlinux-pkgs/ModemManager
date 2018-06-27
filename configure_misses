@@ -1,2 +1,4 @@
 Configure miss: vapigen
 Configure miss: libsystemd-login >= 183
+Configure miss: vapigen
+Configure miss: libsystemd-login >= 183

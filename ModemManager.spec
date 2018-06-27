@@ -4,7 +4,7 @@
 #
 Name     : ModemManager
 Version  : 1.8.0
-Release  : 8
+Release  : 9
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Summary  : Common headers provided by ModemManager
@@ -14,15 +14,31 @@ Requires: ModemManager-bin
 Requires: ModemManager-config
 Requires: ModemManager-lib
 Requires: ModemManager-data
+Requires: ModemManager-license
 Requires: ModemManager-locales
 Requires: ModemManager-man
+Requires: mobile-broadband-provider-info
 BuildRequires : docbook-xml
+BuildRequires : gcc-dev32
+BuildRequires : gcc-libgcc32
+BuildRequires : gcc-libstdc++32
 BuildRequires : gettext
+BuildRequires : glib-extras
+BuildRequires : glibc-dev32
+BuildRequires : glibc-libc32
 BuildRequires : gobject-introspection-dev
 BuildRequires : gtk-doc
 BuildRequires : gtk-doc-dev
 BuildRequires : libxslt-bin
+BuildRequires : mobile-broadband-provider-info
 BuildRequires : perl(XML::Parser)
+BuildRequires : pkgconfig(32gio-2.0)
+BuildRequires : pkgconfig(32gio-unix-2.0)
+BuildRequires : pkgconfig(32glib-2.0)
+BuildRequires : pkgconfig(32gmodule-2.0)
+BuildRequires : pkgconfig(32gobject-2.0)
+BuildRequires : pkgconfig(32gudev-1.0)
+BuildRequires : pkgconfig(32libsystemd)
 BuildRequires : pkgconfig(gio-2.0)
 BuildRequires : pkgconfig(gio-unix-2.0)
 BuildRequires : pkgconfig(glib-2.0)
@@ -45,6 +61,7 @@ Summary: bin components for the ModemManager package.
 Group: Binaries
 Requires: ModemManager-data
 Requires: ModemManager-config
+Requires: ModemManager-license
 Requires: ModemManager-man
 
 %description bin
@@ -79,13 +96,44 @@ Provides: ModemManager-devel
 dev components for the ModemManager package.
 
 
+%package dev32
+Summary: dev32 components for the ModemManager package.
+Group: Default
+Requires: ModemManager-lib32
+Requires: ModemManager-bin
+Requires: ModemManager-data
+Requires: ModemManager-dev
+
+%description dev32
+dev32 components for the ModemManager package.
+
+
 %package lib
 Summary: lib components for the ModemManager package.
 Group: Libraries
 Requires: ModemManager-data
+Requires: ModemManager-license
 
 %description lib
 lib components for the ModemManager package.
+
+
+%package lib32
+Summary: lib32 components for the ModemManager package.
+Group: Default
+Requires: ModemManager-data
+Requires: ModemManager-license
+
+%description lib32
+lib32 components for the ModemManager package.
+
+
+%package license
+Summary: license components for the ModemManager package.
+Group: Default
+
+%description license
+license components for the ModemManager package.
 
 
 %package locales
@@ -106,16 +154,27 @@ man components for the ModemManager package.
 
 %prep
 %setup -q -n ModemManager-1.8.0
+pushd ..
+cp -a ModemManager-1.8.0 build32
+popd
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1527970157
+export SOURCE_DATE_EPOCH=1530115302
 %configure --disable-static
 make  %{?_smp_mflags}
 
+pushd ../build32/
+export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+export CFLAGS="$CFLAGS -m32"
+export CXXFLAGS="$CXXFLAGS -m32"
+export LDFLAGS="$LDFLAGS -m32"
+%configure --disable-static  --without-mbim --without-qmi --with-polkit=no  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+make  %{?_smp_mflags}
+popd
 %check
 export LANG=C
 export http_proxy=http://127.0.0.1:9/
@@ -124,8 +183,20 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1527970157
+export SOURCE_DATE_EPOCH=1530115302
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/doc/ModemManager
+cp COPYING.LIB %{buildroot}/usr/share/doc/ModemManager/COPYING.LIB
+cp COPYING %{buildroot}/usr/share/doc/ModemManager/COPYING
+pushd ../build32/
+%make_install32
+if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
+then
+pushd %{buildroot}/usr/lib32/pkgconfig
+for i in *.pc ; do ln -s $i 32$i ; done
+popd
+fi
+popd
 %make_install
 %find_lang ModemManager
 
@@ -149,6 +220,7 @@ rm -rf %{buildroot}
 /lib/udev/rules.d/77-mm-x22x-port-types.rules
 /lib/udev/rules.d/77-mm-zte-port-types.rules
 /lib/udev/rules.d/80-mm-candidate.rules
+/usr/lib32/girepository-1.0/ModemManager-1.0.typelib
 
 %files bin
 %defattr(-,root,root,-)
@@ -243,6 +315,14 @@ rm -rf %{buildroot}
 /usr/lib64/pkgconfig/ModemManager.pc
 /usr/lib64/pkgconfig/mm-glib.pc
 
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/libmm-glib.so
+/usr/lib32/pkgconfig/32ModemManager.pc
+/usr/lib32/pkgconfig/32mm-glib.pc
+/usr/lib32/pkgconfig/ModemManager.pc
+/usr/lib32/pkgconfig/mm-glib.pc
+
 %files lib
 %defattr(-,root,root,-)
 /usr/lib64/ModemManager/libmm-plugin-altair-lte.so
@@ -279,6 +359,48 @@ rm -rf %{buildroot}
 /usr/lib64/ModemManager/libmm-plugin-zte.so
 /usr/lib64/libmm-glib.so.0
 /usr/lib64/libmm-glib.so.0.3.0
+
+%files lib32
+%defattr(-,root,root,-)
+/usr/lib32/ModemManager/libmm-plugin-altair-lte.so
+/usr/lib32/ModemManager/libmm-plugin-anydata.so
+/usr/lib32/ModemManager/libmm-plugin-cinterion.so
+/usr/lib32/ModemManager/libmm-plugin-dell.so
+/usr/lib32/ModemManager/libmm-plugin-ericsson-mbm.so
+/usr/lib32/ModemManager/libmm-plugin-generic.so
+/usr/lib32/ModemManager/libmm-plugin-haier.so
+/usr/lib32/ModemManager/libmm-plugin-huawei.so
+/usr/lib32/ModemManager/libmm-plugin-iridium.so
+/usr/lib32/ModemManager/libmm-plugin-linktop.so
+/usr/lib32/ModemManager/libmm-plugin-longcheer.so
+/usr/lib32/ModemManager/libmm-plugin-motorola.so
+/usr/lib32/ModemManager/libmm-plugin-mtk.so
+/usr/lib32/ModemManager/libmm-plugin-nokia-icera.so
+/usr/lib32/ModemManager/libmm-plugin-nokia.so
+/usr/lib32/ModemManager/libmm-plugin-novatel-lte.so
+/usr/lib32/ModemManager/libmm-plugin-novatel.so
+/usr/lib32/ModemManager/libmm-plugin-option-hso.so
+/usr/lib32/ModemManager/libmm-plugin-option.so
+/usr/lib32/ModemManager/libmm-plugin-pantech.so
+/usr/lib32/ModemManager/libmm-plugin-quectel.so
+/usr/lib32/ModemManager/libmm-plugin-samsung.so
+/usr/lib32/ModemManager/libmm-plugin-sierra-legacy.so
+/usr/lib32/ModemManager/libmm-plugin-sierra.so
+/usr/lib32/ModemManager/libmm-plugin-simtech.so
+/usr/lib32/ModemManager/libmm-plugin-telit.so
+/usr/lib32/ModemManager/libmm-plugin-thuraya.so
+/usr/lib32/ModemManager/libmm-plugin-ublox.so
+/usr/lib32/ModemManager/libmm-plugin-via.so
+/usr/lib32/ModemManager/libmm-plugin-wavecom.so
+/usr/lib32/ModemManager/libmm-plugin-x22x.so
+/usr/lib32/ModemManager/libmm-plugin-zte.so
+/usr/lib32/libmm-glib.so.0
+/usr/lib32/libmm-glib.so.0.3.0
+
+%files license
+%defattr(-,root,root,-)
+/usr/share/doc/ModemManager/COPYING
+/usr/share/doc/ModemManager/COPYING.LIB
 
 %files man
 %defattr(-,root,root,-)
