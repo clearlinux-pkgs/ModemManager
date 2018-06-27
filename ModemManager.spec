@@ -4,7 +4,7 @@
 #
 Name     : ModemManager
 Version  : 1.8.0
-Release  : 9
+Release  : 10
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Summary  : Common headers provided by ModemManager
@@ -23,7 +23,6 @@ BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
 BuildRequires : gettext
-BuildRequires : glib-extras
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
 BuildRequires : gobject-introspection-dev
@@ -163,7 +162,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1530115302
+export SOURCE_DATE_EPOCH=1530117789
 %configure --disable-static
 make  %{?_smp_mflags}
 
@@ -183,7 +182,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1530115302
+export SOURCE_DATE_EPOCH=1530117789
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/ModemManager
 cp COPYING.LIB %{buildroot}/usr/share/doc/ModemManager/COPYING.LIB
