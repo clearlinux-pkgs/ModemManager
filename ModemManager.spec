@@ -4,7 +4,7 @@
 #
 Name     : ModemManager
 Version  : 1.8.0
-Release  : 10
+Release  : 13
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Summary  : Common headers provided by ModemManager
@@ -23,6 +23,7 @@ BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
 BuildRequires : gettext
+BuildRequires : glibc-bin
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
 BuildRequires : gobject-introspection-dev
@@ -31,6 +32,7 @@ BuildRequires : gtk-doc-dev
 BuildRequires : libxslt-bin
 BuildRequires : mobile-broadband-provider-info
 BuildRequires : perl(XML::Parser)
+BuildRequires : pkg-config
 BuildRequires : pkgconfig(32gio-2.0)
 BuildRequires : pkgconfig(32gio-unix-2.0)
 BuildRequires : pkgconfig(32glib-2.0)
@@ -162,8 +164,8 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1530117789
-%configure --disable-static
+export SOURCE_DATE_EPOCH=1534734595
+%configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/
 make  %{?_smp_mflags}
 
 pushd ../build32/
@@ -171,7 +173,7 @@ export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
 export CFLAGS="$CFLAGS -m32"
 export CXXFLAGS="$CXXFLAGS -m32"
 export LDFLAGS="$LDFLAGS -m32"
-%configure --disable-static  --without-mbim --without-qmi --with-polkit=no  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+%configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/ --without-mbim --without-qmi --with-polkit=no  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
 %check
@@ -182,11 +184,11 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1530117789
+export SOURCE_DATE_EPOCH=1534734595
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/ModemManager
-cp COPYING.LIB %{buildroot}/usr/share/doc/ModemManager/COPYING.LIB
 cp COPYING %{buildroot}/usr/share/doc/ModemManager/COPYING
+cp COPYING.LIB %{buildroot}/usr/share/doc/ModemManager/COPYING.LIB
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -201,24 +203,6 @@ popd
 
 %files
 %defattr(-,root,root,-)
-/lib/udev/rules.d/77-mm-cinterion-port-types.rules
-/lib/udev/rules.d/77-mm-dell-port-types.rules
-/lib/udev/rules.d/77-mm-ericsson-mbm.rules
-/lib/udev/rules.d/77-mm-haier-port-types.rules
-/lib/udev/rules.d/77-mm-huawei-net-port-types.rules
-/lib/udev/rules.d/77-mm-longcheer-port-types.rules
-/lib/udev/rules.d/77-mm-mtk-port-types.rules
-/lib/udev/rules.d/77-mm-nokia-port-types.rules
-/lib/udev/rules.d/77-mm-pcmcia-device-blacklist.rules
-/lib/udev/rules.d/77-mm-sierra.rules
-/lib/udev/rules.d/77-mm-simtech-port-types.rules
-/lib/udev/rules.d/77-mm-telit-port-types.rules
-/lib/udev/rules.d/77-mm-ublox-port-types.rules
-/lib/udev/rules.d/77-mm-usb-device-blacklist.rules
-/lib/udev/rules.d/77-mm-usb-serial-adapters-greylist.rules
-/lib/udev/rules.d/77-mm-x22x-port-types.rules
-/lib/udev/rules.d/77-mm-zte-port-types.rules
-/lib/udev/rules.d/80-mm-candidate.rules
 /usr/lib32/girepository-1.0/ModemManager-1.0.typelib
 
 %files bin
@@ -229,6 +213,24 @@ popd
 %files config
 %defattr(-,root,root,-)
 /usr/lib/systemd/system/ModemManager.service
+/usr/lib/udev/rules.d/77-mm-cinterion-port-types.rules
+/usr/lib/udev/rules.d/77-mm-dell-port-types.rules
+/usr/lib/udev/rules.d/77-mm-ericsson-mbm.rules
+/usr/lib/udev/rules.d/77-mm-haier-port-types.rules
+/usr/lib/udev/rules.d/77-mm-huawei-net-port-types.rules
+/usr/lib/udev/rules.d/77-mm-longcheer-port-types.rules
+/usr/lib/udev/rules.d/77-mm-mtk-port-types.rules
+/usr/lib/udev/rules.d/77-mm-nokia-port-types.rules
+/usr/lib/udev/rules.d/77-mm-pcmcia-device-blacklist.rules
+/usr/lib/udev/rules.d/77-mm-sierra.rules
+/usr/lib/udev/rules.d/77-mm-simtech-port-types.rules
+/usr/lib/udev/rules.d/77-mm-telit-port-types.rules
+/usr/lib/udev/rules.d/77-mm-ublox-port-types.rules
+/usr/lib/udev/rules.d/77-mm-usb-device-blacklist.rules
+/usr/lib/udev/rules.d/77-mm-usb-serial-adapters-greylist.rules
+/usr/lib/udev/rules.d/77-mm-x22x-port-types.rules
+/usr/lib/udev/rules.d/77-mm-zte-port-types.rules
+/usr/lib/udev/rules.d/80-mm-candidate.rules
 
 %files data
 %defattr(-,root,root,-)
@@ -252,6 +254,7 @@ popd
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Sms.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.xml
 /usr/share/dbus-1/system-services/org.freedesktop.ModemManager1.service
+/usr/share/dbus-1/system.d/org.freedesktop.ModemManager1.conf
 /usr/share/gir-1.0/*.gir
 /usr/share/icons/hicolor/22x22/apps/ModemManager.png
 /usr/share/polkit-1/actions/org.freedesktop.ModemManager1.policy
