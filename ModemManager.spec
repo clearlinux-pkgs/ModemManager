@@ -4,7 +4,7 @@
 #
 Name     : ModemManager
 Version  : 1.8.0
-Release  : 13
+Release  : 16
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.0.tar.xz
 Summary  : Common headers provided by ModemManager
@@ -164,7 +164,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1534734595
+export SOURCE_DATE_EPOCH=1534900404
 %configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/
 make  %{?_smp_mflags}
 
@@ -184,7 +184,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1534734595
+export SOURCE_DATE_EPOCH=1534900404
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/ModemManager
 cp COPYING %{buildroot}/usr/share/doc/ModemManager/COPYING
@@ -200,6 +200,9 @@ fi
 popd
 %make_install
 %find_lang ModemManager
+## install_append content
+ln -s ModemManager.service  %{buildroot}/usr/lib/systemd/system/dbus-org.freedesktop.ModemManager1.service
+## install_append end
 
 %files
 %defattr(-,root,root,-)
@@ -213,6 +216,7 @@ popd
 %files config
 %defattr(-,root,root,-)
 /usr/lib/systemd/system/ModemManager.service
+/usr/lib/systemd/system/dbus-org.freedesktop.ModemManager1.service
 /usr/lib/udev/rules.d/77-mm-cinterion-port-types.rules
 /usr/lib/udev/rules.d/77-mm-dell-port-types.rules
 /usr/lib/udev/rules.d/77-mm-ericsson-mbm.rules
