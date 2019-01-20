@@ -4,19 +4,20 @@
 #
 Name     : ModemManager
 Version  : 1.8.2
-Release  : 17
+Release  : 18
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.2.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.2.tar.xz
-Summary  : Common headers provided by ModemManager
+Summary  : Mobile broadband modem management service
 Group    : Development/Tools
 License  : GPL-2.0 LGPL-2.1
-Requires: ModemManager-bin
-Requires: ModemManager-config
-Requires: ModemManager-lib
-Requires: ModemManager-data
-Requires: ModemManager-license
-Requires: ModemManager-locales
-Requires: ModemManager-man
+Requires: ModemManager-bin = %{version}-%{release}
+Requires: ModemManager-config = %{version}-%{release}
+Requires: ModemManager-data = %{version}-%{release}
+Requires: ModemManager-lib = %{version}-%{release}
+Requires: ModemManager-license = %{version}-%{release}
+Requires: ModemManager-locales = %{version}-%{release}
+Requires: ModemManager-man = %{version}-%{release}
+Requires: ModemManager-services = %{version}-%{release}
 Requires: mobile-broadband-provider-info
 BuildRequires : docbook-xml
 BuildRequires : gcc-dev32
@@ -65,6 +66,7 @@ Requires: ModemManager-data = %{version}-%{release}
 Requires: ModemManager-config = %{version}-%{release}
 Requires: ModemManager-license = %{version}-%{release}
 Requires: ModemManager-man = %{version}-%{release}
+Requires: ModemManager-services = %{version}-%{release}
 
 %description bin
 bin components for the ModemManager package.
@@ -154,6 +156,14 @@ Group: Default
 man components for the ModemManager package.
 
 
+%package services
+Summary: services components for the ModemManager package.
+Group: Systemd services
+
+%description services
+services components for the ModemManager package.
+
+
 %prep
 %setup -q -n ModemManager-1.8.2
 pushd ..
@@ -165,16 +175,24 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1537642549
-%configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/
+export SOURCE_DATE_EPOCH=1548004253
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export FCFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export FFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+%configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/ --with-polkit=no --with-systemd-journal=no
 make  %{?_smp_mflags}
 
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+export ASFLAGS="$ASFLAGS --32"
 export CFLAGS="$CFLAGS -m32"
 export CXXFLAGS="$CXXFLAGS -m32"
 export LDFLAGS="$LDFLAGS -m32"
-%configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/ --without-mbim --without-qmi --with-polkit=no  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+%configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/ --with-polkit=no --with-systemd-journal=no --without-mbim --without-qmi --with-polkit=no  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
 %check
@@ -184,14 +202,14 @@ export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 cd ../build32;
-make VERBOSE=1 V=1 %{?_smp_mflags} check || :
+make VERBOSE=1 V=1 %{?_smp_mflags} check || : || :
 
 %install
-export SOURCE_DATE_EPOCH=1537642549
+export SOURCE_DATE_EPOCH=1548004253
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/ModemManager
-cp COPYING %{buildroot}/usr/share/doc/ModemManager/COPYING
-cp COPYING.LIB %{buildroot}/usr/share/doc/ModemManager/COPYING.LIB
+mkdir -p %{buildroot}/usr/share/package-licenses/ModemManager
+cp COPYING %{buildroot}/usr/share/package-licenses/ModemManager/COPYING
+cp COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/COPYING.LIB
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -218,8 +236,6 @@ ln -s ModemManager.service  %{buildroot}/usr/lib/systemd/system/dbus-org.freedes
 
 %files config
 %defattr(-,root,root,-)
-/usr/lib/systemd/system/ModemManager.service
-/usr/lib/systemd/system/dbus-org.freedesktop.ModemManager1.service
 /usr/lib/udev/rules.d/77-mm-cinterion-port-types.rules
 /usr/lib/udev/rules.d/77-mm-dell-port-types.rules
 /usr/lib/udev/rules.d/77-mm-ericsson-mbm.rules
@@ -264,7 +280,6 @@ ln -s ModemManager.service  %{buildroot}/usr/lib/systemd/system/dbus-org.freedes
 /usr/share/dbus-1/system.d/org.freedesktop.ModemManager1.conf
 /usr/share/gir-1.0/*.gir
 /usr/share/icons/hicolor/22x22/apps/ModemManager.png
-/usr/share/polkit-1/actions/org.freedesktop.ModemManager1.policy
 
 %files dev
 %defattr(-,root,root,-)
@@ -407,14 +422,19 @@ ln -s ModemManager.service  %{buildroot}/usr/lib/systemd/system/dbus-org.freedes
 /usr/lib32/libmm-glib.so.0.3.0
 
 %files license
-%defattr(-,root,root,-)
-/usr/share/doc/ModemManager/COPYING
-/usr/share/doc/ModemManager/COPYING.LIB
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/ModemManager/COPYING
+/usr/share/package-licenses/ModemManager/COPYING.LIB
 
 %files man
-%defattr(-,root,root,-)
+%defattr(0644,root,root,0755)
 /usr/share/man/man1/mmcli.1
 /usr/share/man/man8/ModemManager.8
+
+%files services
+%defattr(-,root,root,-)
+/usr/lib/systemd/system/ModemManager.service
+/usr/lib/systemd/system/dbus-org.freedesktop.ModemManager1.service
 
 %files locales -f ModemManager.lang
 %defattr(-,root,root,-)
