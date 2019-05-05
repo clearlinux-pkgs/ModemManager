@@ -4,10 +4,10 @@
 #
 Name     : ModemManager
 Version  : 1.10.0
-Release  : 19
+Release  : 20
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.10.0.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.10.0.tar.xz
-Summary  : Common headers provided by ModemManager
+Summary  : Mobile broadband modem management service
 Group    : Development/Tools
 License  : GPL-2.0 LGPL-2.1
 Requires: ModemManager-bin = %{version}-%{release}
@@ -51,6 +51,7 @@ BuildRequires : pkgconfig(libsystemd)
 BuildRequires : pkgconfig(mbim-glib)
 BuildRequires : pkgconfig(polkit-gobject-1)
 BuildRequires : pkgconfig(qmi-glib)
+BuildRequires : vala
 
 %description
 ModemManager.
@@ -64,7 +65,6 @@ Group: Binaries
 Requires: ModemManager-data = %{version}-%{release}
 Requires: ModemManager-config = %{version}-%{release}
 Requires: ModemManager-license = %{version}-%{release}
-Requires: ModemManager-man = %{version}-%{release}
 Requires: ModemManager-services = %{version}-%{release}
 
 %description bin
@@ -94,6 +94,7 @@ Requires: ModemManager-lib = %{version}-%{release}
 Requires: ModemManager-bin = %{version}-%{release}
 Requires: ModemManager-data = %{version}-%{release}
 Provides: ModemManager-devel = %{version}-%{release}
+Requires: ModemManager = %{version}-%{release}
 
 %description dev
 dev components for the ModemManager package.
@@ -174,7 +175,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1549938867
+export SOURCE_DATE_EPOCH=1557096180
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -187,10 +188,10 @@ make  %{?_smp_mflags}
 
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
-export ASFLAGS="$ASFLAGS --32"
-export CFLAGS="$CFLAGS -m32"
-export CXXFLAGS="$CXXFLAGS -m32"
-export LDFLAGS="$LDFLAGS -m32"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32"
 %configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d   --with-udev-base-dir=/usr/lib/udev/ --with-polkit=no --with-systemd-journal=no --without-mbim --without-qmi --with-polkit=no  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
@@ -204,7 +205,7 @@ cd ../build32;
 make VERBOSE=1 V=1 %{?_smp_mflags} check || : || :
 
 %install
-export SOURCE_DATE_EPOCH=1549938867
+export SOURCE_DATE_EPOCH=1557096180
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/ModemManager
 cp COPYING %{buildroot}/usr/share/package-licenses/ModemManager/COPYING
