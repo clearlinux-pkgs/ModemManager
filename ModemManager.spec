@@ -4,7 +4,7 @@
 #
 Name     : ModemManager
 Version  : 1.10.8
-Release  : 24
+Release  : 25
 URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.10.8.tar.xz
 Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.10.8.tar.xz
 Summary  : Mobile broadband modem management service
