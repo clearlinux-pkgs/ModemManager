@@ -1,7 +1,9 @@
 # This file contains pkgconfig build requirements that get picked up
 # but are undesirable. One entry per line, no whitespace.
-libsystemd-login
+32libelogind
 32libsystemd-login
 32mbim-glib
 32polkit-gobject-1
 32qmi-glib
+libelogind
+libsystemd-login
