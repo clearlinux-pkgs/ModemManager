@@ -1,6 +1,3 @@
-Configure miss: vapigen
-Configure miss: LIBSYSTEMD_LOGIN
 Configure miss: LIBELOGIND
-Configure miss: vapigen
 Configure miss: LIBSYSTEMD_LOGIN
-Configure miss: LIBELOGIND
+Configure miss: vapigen
