@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x3CAD53398973FFFA (aleksander@aleksander.es)
 #
 Name     : ModemManager
-Version  : 1.16.2
-Release  : 28
-URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.2.tar.xz
-Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.2.tar.xz
-Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.2.tar.xz.asc
+Version  : 1.16.4
+Release  : 29
+URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.4.tar.xz
+Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.4.tar.xz
+Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.4.tar.xz.asc
 Summary  : Common headers provided by ModemManager
 Group    : Development/Tools
 License  : GPL-2.0 LGPL-2.1
@@ -30,7 +30,6 @@ BuildRequires : gtk-doc-dev
 BuildRequires : libxslt-bin
 BuildRequires : mobile-broadband-provider-info
 BuildRequires : perl(XML::Parser)
-BuildRequires : pkg-config
 BuildRequires : pkgconfig(gio-2.0)
 BuildRequires : pkgconfig(gio-unix-2.0)
 BuildRequires : pkgconfig(glib-2.0)
@@ -133,15 +132,15 @@ services components for the ModemManager package.
 
 
 %prep
-%setup -q -n ModemManager-1.16.2
-cd %{_builddir}/ModemManager-1.16.2
+%setup -q -n ModemManager-1.16.4
+cd %{_builddir}/ModemManager-1.16.4
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1616004190
+export SOURCE_DATE_EPOCH=1619107448
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -164,11 +163,11 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1616004190
+export SOURCE_DATE_EPOCH=1619107448
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/ModemManager
-cp %{_builddir}/ModemManager-1.16.2/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
-cp %{_builddir}/ModemManager-1.16.2/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
+cp %{_builddir}/ModemManager-1.16.4/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
+cp %{_builddir}/ModemManager-1.16.4/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
 %make_install
 %find_lang ModemManager
 ## install_append content
