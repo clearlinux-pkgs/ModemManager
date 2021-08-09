@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x3CAD53398973FFFA (aleksander@aleksander.es)
 #
 Name     : ModemManager
-Version  : 1.16.6
-Release  : 30
-URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.6.tar.xz
-Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.6.tar.xz
-Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.6.tar.xz.asc
+Version  : 1.16.10
+Release  : 31
+URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.10.tar.xz
+Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.10.tar.xz
+Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.10.tar.xz.asc
 Summary  : Common headers provided by ModemManager
 Group    : Development/Tools
 License  : GPL-2.0 LGPL-2.1
@@ -132,23 +132,23 @@ services components for the ModemManager package.
 
 
 %prep
-%setup -q -n ModemManager-1.16.6
-cd %{_builddir}/ModemManager-1.16.6
+%setup -q -n ModemManager-1.16.10
+cd %{_builddir}/ModemManager-1.16.10
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1623086892
+export SOURCE_DATE_EPOCH=1628538572
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
-export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
-export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
-export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
+export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
+export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition "
 %configure --disable-static --with-dbus-sys-dir=/usr/share/dbus-1/system.d \
 --with-udev-base-dir=/usr/lib/udev/ \
 --with-polkit=no \
@@ -163,11 +163,11 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1623086892
+export SOURCE_DATE_EPOCH=1628538572
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/ModemManager
-cp %{_builddir}/ModemManager-1.16.6/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
-cp %{_builddir}/ModemManager-1.16.6/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
+cp %{_builddir}/ModemManager-1.16.10/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
+cp %{_builddir}/ModemManager-1.16.10/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
 %make_install
 %find_lang ModemManager
 ## install_append content
