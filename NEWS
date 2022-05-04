@@ -1,135 +1,416 @@
 
-ModemManager 1.16.10
+ModemManager 1.18.8
 -------------------------------------------
+
+ * A new connection status dispatcher setup is provided, where users can
+   provide custom scripts that will be called on bearer connect/disconnect
+   events. This dispatcher will make the netifd integration in openwrt work
+   much better, as we'll be able to report network-initiated disconnections
+   cleanly to netifd.
+
+   There are no default connection status dispatcher scripts installed, but
+   it's suggested distributions make sure the following directories exist:
+     - ${sysconfdir}/ModemManager/connection.d/
+     - ${libdir}/ModemManager/connection.d/
+
+ * API:
+   ** Add missing Simple interface definitions in ModemManager-names.h.
+
+ * Build:
+   ** meson: fix daemon enums dependencies.
+   ** meson: fix port enums includes.
+   ** meson: fix 'export_packages' in GIR setup.
+   ** meson: fix simtech plugin module name.
+   ** systemd: don't run ModemManager in containers.
+
+ * Core:
+   ** serial: ensure the port object is valid after BUFFER_FULL handling.
+   ** netlink: use unaligned netlink attribute length.
+   ** netlink: only change IFF_UP flag.
+   ** bearer: match unknown auth to chap in loose comparisons.
+   ** charsets: return error if UTF-8 validation fails.
+   ** fcc-unlock: make scripts POSIX shell compatible.
+   ** modem-helpers: consider minimum ID when choosing best profile.
+   ** modem-helpers: fix reading <Act> given in COPS=? responses.
+   ** sms: prevent crash if date is out of range.
+   ** profile-manager: fix copy-paste error on tags for quarks.
 
  * QMI:
-   ** Fixed use of uninitialized memory in the 3GPP registration logic when
-      running NAS Set System Selection Preference.
+   ** Ignore slot status indications until initial status is known.
+   ** Return error when loading capabilities if none is found.
 
  * MBIM:
-   ** Remove trailing 'F' in ICCIDs.
-   ** Increased the timeout of the first MBIM command after the port is opened,
-      in order to leave time to the module to finish booting properly.
+   ** Default initial EPS bearer's auth to chap when unknown.
+   ** Update default error when network error is out of range.
 
- * plugins:
-   ** icera: fixed segfault during the connection reset logic.
-   ** fibocom: add port type hints for the NL668-AM.
-   ** fibocom: fix supporting QMI based devices.
-   ** huawei: ignored ^LWURC URCs.
-   ** huawei: fixed memory leak when processing GETPORTMODE hints.
-   ** cinterion: increased ^SCFG? timeout to 120s.
-   ** Updated all AT/QCDM/GPS port type hints in all plugins to bind them
-      to TTY ports only.
+ * mmcli:
+   ** Fix key length when printing list of items.
+
+ * Plugins:
+   ** linktop: new port type hints.
+   ** cinterion: add support for PLSx3w modems
+   ** huawei: disable +CPOL based features in Huawei E226
 
  * Several other minor improvements and fixes.
 
-ModemManager 1.16.8
--------------------------------------------
 
- * MBIM:
-   ** Fixed wrong session id management when multiple bearers are created.
-
- * Modem interface:
-   ** Fixed the enabling operation on multiple plugins that don't have explicit
-      power up/down operations.
-
- * libmm-glib:
-   ** Modem interface: added missing input argument checks.
-   ** Messaging interface: fixed get_supported_storages() handling when it's
-      called several consecutive times.
-   ** 3GPP interface: fixed initial EPS bearer settings property updates.
-
- * plugins:
-   ** cinterion: fixed double free when loading initial EPS context.
-
- * udev:
-   ** Explicitly ignore "FIREHOSE" WWAN ports.
-   ** Add support to match WWAN type via sysfs attributes.
-
- * Several other minor improvements and fixes.
-
-ModemManager 1.16.6
+ModemManager 1.18.6
 -------------------------------------------
 
  * Build:
-   ** Require libqmi >= 1.28.6 (for the optional QMI support).
-   ** Fix error with GCC 11 and -Wincompatible-pointer-types.
-   ** Fix warning with GCC 11 and -Wmaybe-uninitialized.
+   ** meson: fix gdbus code generation with meson 0.61.
+   ** meson: fix i18n.merge_file() call with meson 0.60.
+
+ * Core:
+   ** plugin-manager: longer extra probing time when not using udev.
+   ** filter: added 'option' driver name to the TTY driver filter list.
+   ** udev: avoid wrong [0-9]* as shell globbing patterns.
 
  * QMI:
-   ** Increased device open timeout to 45s.
-   ** Added support to handle transfer-route messages.
+   ** Added new ID_MM_QMI_FACILITY_LOCK_QUERY_REDUCED udev flag to reduce the
+      facility lock querying operations on devices that don't support it
+      properly.
+   ** Fixed capabilities and modes loading in multimode devices.
+   ** Improved capabilities and modes handling for devices with 5G capabilities.
 
- * Base manager:
-   ** Added support for Qualcomm based PCI devices in the new WWAN subsystem in
-      kernel 5.13.
-   ** Fix segfault on rare conditions when ports reported don't have a proper
-      subsystem or name.
-   ** Fix segfault when trying to create device id after device is already gone.
+ * MBIM:
+   ** Fixed logic reporting the number of remaining unlock attempts.
 
- * plugins:
-   ** foxconn: added support for the T99W175 module.
-   ** foxconn: fix segfault when attempting to use parent location support.
-   ** quectel: ignore QLWURC URCs.
-
- * Several other minor improvements and fixes.
-
-ModemManager 1.16.4
--------------------------------------------
-
- * Fix build when using libgudev < 232, which is when autoptr support was
-   introduced in the GUdev* types. We'll keep the 1.16.x branch depending on
-   libgudev 147, and only bump the requirement in git master.
-
- * This version comes with an overall rework of the charset encoding handling
-   inside the ModemManager daemon, which was already available in git master
-   for some time and has been proved to be very useful.
-   ** The charset conversion is now strict, except for a few cases where we
-      would try to do our best (e.g. operator name normalization).
-   ** The charset methods are cleaned up, with clear distinction between the
-      ones that allow NUL-finished C strings and the ones that may have valid
-      embedded NUL bytes.
-   ** The //TRANSLIT extension is completely avoided, as not all implementations
-      out there have it (e.g. unavailable in musl libc), and we now use
-      g_convert_with_fallback() instead where appropriate.
-
- * Modem interface:
-   ** Fixed crash triggered when attempting to update lock info on an already
-      removed DBus skeleton.
-
- * Time interface:
-   ** Fixed invalid memory read when loading network timezone fails.
-
- * Base bearer:
-   ** Ignored forced disconnections after some time unregistered when PPP is
-      being used, so that we don't end up hijacking the TTY while pppd is using
-      it.
-
- * Kernel device:
-   ** Fix segfault when processing event for non-existing port.
-
- * QMI:
-   ** Fixed allowed modes setup when using the "Acquisition Order Preference"
-      TLV in the "NAS System Selection Preference" messages. 3GPP+3GPP2
-      multimode devices like the MC73xx series were affected.
+ * 3GPP interface:
+   ** Fix memleak in network scan result building.
 
  * libmm-glib:
-   ** Fixed comparison of 'allowed auth' and 'rm protocol' settings in bearer
-      properties.
+   ** Fix memleak when processing network scan results.
+
+ * mmcli:
+   ** Fixed operator mcc/mnc field names in human output of location info.
 
  * Plugins:
-   ** cinterion: allow '*' in Prov/Cfg response.
-   ** cinterion: fixed several FALSE returns without GError set.
-   ** quectel: ignore +QGPSURC URCs.
+   ** telit: added port type hints for LE910C1-EUX.
+   ** fibocom: added port type hints for FM101.
+   ** foxconn: firmware info loading only of MBIM-QMUX is enabled in libqmi.
+   ** quectel: ignore carrier revision.
+   ** quectel: use +QGMR to set version.
+   ** quectel: add new 'NAME' tag in device ids, so that firmware updates can be
+      performed differently depending on the device name.
 
- * Several other minor improvements and fixes.
+ * Several other improvements and fixes.
 
-ModemManager 1.16.2
+
+ModemManager 1.18.4
 -------------------------------------------
 
- * build: fixed with GLib < 2.54.
- * qmi: fixed network regitration cancellation when asserts disabled.
- * libmm-glib: fix allow-roaming setting comparison in bearer properties.
+ * A new FCC unlock operation management via external scripts is introduced,
+   which will avoid to automatically unlock FCC locked devices unless the user
+   has configured the operation manually, or unless an official vendor-provided
+   FCC unlock tool is found in the system.
+
+   Please refer to the following URL for full details:
+   https://modemmanager.org/docs/modemmanager/fcc-unlock/
+
+   The following changes should be taken into account by distribution packagers:
+   ** A set of FCC unlock scripts named as the specific vendor 'vid' will be
+      installed in ${datadir}/ModemManager/fcc-unlock.available.d.
+   ** A set of symlinks is created named as the specific device 'vid:pid', and
+      pointing to the per-vendor 'vid' files, in the same location inside
+      ${datadir}.
+   ** A new ${sysconfdir}/ModemManager/fcc-unlock.d directory is created, where
+      users will manually install additional symlinks to the scripts shipped in
+      ${datadir}.
+   ** A new ${libdir}/ModemManager/fcc-unlock.d directory is created, where
+      vendors will install their own official FCC unlock tools.
+   ** Both fcc-unlock.d directories should be empty on a new install, and their
+      contents (if any) should not be removed on ModemManager upgrades.
+
+ * build,meson:
+   ** All optional settings in the build (e.g. introspection, systemd
+      suspend/resume support, udev...) are now booleans (true/false) instead
+      of features. Having dependencies as 'auto' has given problems since the
+      very beginning when using autotools, because sometimes the build goes on
+      even if all the features required by the user were not enabled. This
+      change in the meson build now requires the user to explicitly enable or
+      disable features. This is for consistency across all libqrtr-glib, libqmi,
+      libmbim and ModemManager.
+   ** If the build relies on enabling specific plugins, though, these are still
+      features (enable/disable/auto). The user may disable all plugins with
+      `-Dauto_features=disabled` and then enable specific plugins independently.
+   ** Fixed the plugin dependency on build options.
+
+ * libmm-glib:
+   ** The license text in several source files of the library is fixed to reflect
+      that they are LGPLv2+, as the whole library. This is not a relicense of any
+      kind, just a fix in the wording.
+
+ * modem interface:
+   ** Always set error if creating device identifier fails.
+
+ * firmware interface:
+   ** Fix missing context initialization leading to crash.
+
+ * profile manager interface:
+   ** Fix incorrect GError ownership management.
+
+ * mbim:
+   ** Fix crash when processing DNS addresses on a connection attempt.
+   ** Fix incorrect GError ownership management when reloading connection status.
+
+ * qmi:
+   ** Fix non-initialized GError.
+
+ * sms:
+   ** Merge WDP multipart CDMA WAP messages.
+   ** Increase default send timeout from 180s to 300s.
+
+ * kerneldevice:
+   ** Fix pattern matching logic in the custom udev rules parser, required to
+      correctly handle devices in the WWAN subsystem in kernel 5.13.
+
+ * plugins:
+   ** qcom-soc: this plugin is now enabled by default, so that it can be used on
+      several new laptops based on Qualcomm SoCs.
+   ** qcom-soc: updated to require the explicit ID_MM_QCOM_SOC udev tag.
+   ** telit: fix critical message when attempting to unref a NULL object.
+   ** telit: allow unlock retries loading for unknown error csim reply.
+   ** telit: avoid sim hot swap procedure if #QSS is not supported.
+   ** telit: add port type hints for LE910S1 0x7010, 0x7011 compositions.
+   ** quectel: fix non-initialized GError.
+   ** foxconn: added support for T99W265 modules.
+
+ * Several other improvements and fixes.
+
+
+ModemManager 1.18.2
+-------------------------------------------
+
+ * build,meson:
+   ** The minimum required meson version is now 0.53.0.
+   ** Fixed generation of shared utils and plugin modules, so that they don't
+      include and export symbols that are internal of the daemon.
+   ** Fixed the definition of the plugins directory path so that it's an
+      absolute one instead of one relative to the prefix.
+   ** Fixed the usage of the systemd suspend/resume build option.
+   ** Optional features like introspection support, QMI support, MBIM support,
+      QRTR support... are all now defined as meson 'features' (i.e. 'auto',
+      'enabled' or 'disabled') instead of booleans (i.e. 'false' or 'true').
+   ** Several other improvements and fixes.
+
+ * plugins:
+   ** novatel: fix crash when returning a NULL timezone without any error set.
+
+ModemManager 1.18.0
+-------------------------------------------
+This is a new stable release of ModemManager.
+
+The following notes are directed to package maintainers:
+
+ * This version now requires:
+   ** glib2 >= 2.56
+   ** libgudev >= 232
+   ** libmbim >= 1.26.0 (for the optional MBIM support)
+   ** libqmi >= 1.30.2 (for the optional QMI support)
+   ** libqrtr-glib >= 1.0.0 (for the optional QRTR support)
+
+ * The ModemManager.service file for systemd integration provided in the sources
+   is updated as follows:
+   ** 'CAP_NET_ADMIN' is now required in the 'CapabilityBoundingSet' field.
+   ** 'AF_NETLINK' and 'AF_QIPCRTR' are now required in the
+      'RestrictAddressFamilies' field.
+   If the system where ModemManager is being integrated provides a custom
+   systemd service configuration, these updates should be considered.
+
+ * The LEGACY and PARANOID filter types that were allowed options in the
+   '--filter-policy' option in the ModemManager daemon were deprecated in
+   version 1.16.0 and have now been completely removed, along with the vid:pid
+   blacklist of devices and the vid:pid greylist of RS232<->USB adapters.
+
+ * Building from git no longer requires autoconf-archive, the needed AX_ macros
+   are now shipped inside m4/.
+
+ * In addition to building from a source release tarball, or building from git
+   checkouts using the GNU autotools suite (autoconf/automake/libtool), this
+   release includes the initial support for the meson build system. The meson
+   port is not fully complete yet, as there are some missing things in the doc
+   generation and test steps, but for system integration or development
+   purposes, the port should be fully operational. This major release, including
+   all its stable updates in the 1.18.x series, will be the last ones providing
+   support for GNU autotools. The next major release will likely be a meson-only
+   one, and will therefore not be based on a source release tarball any more,
+   but on specific git tags instead.
+
+The most important features and changes in this release are the following:
+
+ * Data session multiplexing can now be enabled in QMI and MBIM modems, e.g. so
+   that multiple different APNs can be connected separately over a single
+   network interface. The multiplexing is disabled by default in this release,
+   except for cases where it's required (e.g. if non-multiplexed sessions aren't
+   supported) like IPA based Qualcomm SoCs. Users can request the multiplexing
+   support explicitly via settings when creating the connection bearer object.
+
+   In order to allow easy testing of the multiplexing feature without requiring
+   any additional change in the stack, a new '--test-multiplex-requested' option
+   in the daemon allows to switch the default (when not explicitly given by the
+   user) to attempt to use multiplexing.
+
+   It is worth noting that when multiplexing is enabled, the data network
+   interface used by the modem will be a virtual network interface created in
+   runtime, and will therefore have a different name than the real network
+   interface exposed by the modem. If there are additional settings in the
+   system relying on the data network interface name (e.g. iptables rules), they
+   may need to be updated.
+
+ * The ModemManager daemon can run now in a 'quick suspend/resume' mode, in
+   which no explicit data disconnection is triggered on suspend, and no explicit
+   device re-probing from scratch is launched on resume. Instead, the daemon
+   will try to refresh the state of all interfaces upon suspend, e.g. to see if
+   the module keeps registered to the same operator, to see if it is still
+   connected, and so on.
+
+   This mode of operation is useful when the WWAN module stays awake while the
+   host is suspended, and can be enabled with the '--test-quick-suspend-resume'
+   option in the daemon.
+
+ * API:
+   ** New '3gppProfileManager' interface, providing operations on the list of
+      connection profiles stored in the 3GPP module. This interface is
+      implemented for all AT, QMI and MBIM protocols.
+   ** New 'DisableFacilityLock()' method in the 3GPP interface, implemented for
+      QMI and MBIM devices.
+   ** The 'MaxBearers' property is now deprecated, as it didn't provide any
+      additional information to what 'MaxActiveBearers' already provides.
+   ** New 'MaxActiveMultiplexedBearers' property, listing how many bearers can
+      be connected at the same time if multiplexing is enabled.
+   ** New settings in the bearer properties, applicable to both the
+      'Simple.Connect()' and 'Modem.CreateBearer()' methods:
+      *** 'multiplex': which allows the user to specify whether multiplexing
+          should be avoided ('none'), whether it should be mandatory
+	  ('required') or whether it should be enabled if available or skipped
+	  if unavailable ('requested').
+      *** 'profile-id': which allows the user to request a connection attempt
+          with an existing profile stored in the module.
+      *** 'apn-type': which allows the user to specify the purpose of a given
+          connection, e.g. the user could create a connection to an APN
+	  providing default internet connectivity and another one to an APN
+	  providing access to the MMS gateway. This setting may or may not be
+	  stored in the module itself, it depends on the type of module.
+   ** New 'Multiplexed' boolean property in the Bearer object, specifying
+      whether the bearer is connected through a multiplexed interface.
+   ** New 'ConnectionError' property in the bearer object, specifying the last
+      error reported by the module during a failed connection attempt or during
+      a network-initiated disconnection.
+   ** Updated the list of enum values in the MMMobileEquipmentError' type,
+      according to the error codes defined in v17.1.0 of 3GPP TS 27.007.
+
+ * Core:
+   ** iconv() features support is detected at runtime, and logged when the
+      daemon starts.
+   ** Updated the base modem object to allow plugins to specify the types of
+      data ports they support, based on the specific plugin implementations,
+      e.g. so that a modem supporting only AT+PPP can ignore NET ports and
+      vice versa.
+   ** Added support for modems exposing control ports via QRTR channels.
+
+ * Modem interface:
+   ** The Dual SIM logic that would iterate over all slots during initialization
+      is updated, so that we only report the information that we can gather
+      without any explicit slot change. E.g. with QMI we can know whether there
+      is a SIM in the non-active slot, and the ICCID of that SIM, but we cannot
+      know the MCCMNC or the operator name of the SIM unless we change to that
+      slot. We must not do slot changes arbitrarily like that, and so that logic
+      is removed, even if we lose some of the information that we were providing
+      in the interface.
+
+ * Location interface:
+   ** The multi-sentence NMEA trace support is updated to include additional
+      possible trace types in addition to GSV (e.g. ALM, GSV, RTE, SFI) and also
+      when coming from other constellations, not just GPS.
+
+ * SIM:
+   ** New 'PreferredNetworks' property and 'SetPreferredNetworks' method,
+      implemented using '+CPOL' for generic AT modems and 'NAS Get/Set Preferred
+      Networks' for QMI modems. Several different modules and plugins (e.g.
+      Sierra Wireless EM7345, Telit LN930, SIM7070, all Option and Iridium
+      devices...) have this feature explicitly disabled due to '+CPOL' not
+      behaving properly (even crashing the module sometimes).
+
+ * QMI:
+   ** The logic that decides which data mode (802.3 or raw-ip) is used in
+      modules managed by the qmi_wwan driver changes in this release. Until now,
+      if a module reported itself as configured in 802.3 mode on boot, that mode
+      would be the one used in normal operation. Due to the new multiplexing
+      feature, this is no longer true, and if possible the daemon will always
+      try to switch the module to raw-ip, and fallback to 802.3 only if raw-ip
+      is unsupported.
+   ** Enabled both AT and QMI indications for the messaging and voice interfaces
+      so that new SMS and call events are reported via both channels. This
+      solves issues seen in the Pinephone when waking up from suspend.
+   ** Enabled network reject indications.
+   ** If operator name not updated through standard indications, it will be
+      explicitly queried with 'NAS Get Plmn Name'.
+   ** Added support for transfer-route MT messages.
+   ** Increased the QMI open timeout to 45s, as required by the newest modules.
+   ** Implemented additional logic to read the status of the different facility
+      locks in the module.
+   ** Updated ICCID reading logic to parse it as hex instead of BCD.
+   ** Improved handling of the MNC PCS digit in the operations involving MCCMNC.
+   ** Automatically run the 'DPM Open Port' logic on IPA based setups to bind
+      the hardware tx/rx endpoints with the logical ones in the QMI protocol.
+   ** Implemented support for the Voice interface and its operations, not only
+      standard voice call management, but also support for the supplementary
+      services. Voice call management will be done completely using QMI, even
+      if the new call indications are notified via AT URCs.
+
+ * MBIM:
+   ** Implemented support for Dual SIM in non-QMI MBIM devices, using the
+      Microsoft Basic Connect Extensions service.
+   ** Increased the timeout for the MBIM_CID_HOME_PROVIDER query to 30s.
+   ** Updated to load model string using QMI over MBIM if available.
+   ** Increased the MBIM open timeout to 45s, as required by the newest modules.
+
+ * SMS:
+   ** Defined a common timeout of 180s for all send operations.
+
+ * libmm-glib:
+   ** Updated with new methods and types to handle all the DBus API updates.
+   ** Extended with additional methods in the Location3gpp object to get/set the
+      full operator MCCMNC string, instead of integers without MNC PCS digit
+      info.
+   ** Extended the 'ModemLocation' interface with methods to get the signaled
+      location updates; i.e. without requiring an explicit GetLocation(), and
+      obviously only supported when location signaling is explicitly enabled.
+   ** Updated the way the internal monitored properties are handled in the
+      different types, now using some handy helper macros to share the same
+      logic among all.
+
+ * Plugins:
+   ** zte: disabled CIND/CMER support.
+   ** qcom-soc: added support for QRTR+IPA based setups.
+   ** qcom-soc: added support for the WWAN subsystem instead of RPMSG.
+   ** quectel: enabled QGPSXTRA by default when starting the GNSS engine.
+   ** quectel: add support for EM120/160 PCIe modules.
+   ** quectel: added Firehose update method.
+   ** ublox: added additional URAT combinations.
+   ** ublox: flagged UBANDSEL as unsupported in the SARA-R4 and -N4 modules.
+   ** cinterion: added new custom MBIM based modem with shared reset operation.
+   ** cinterion: ignored the MBIM Intel Firmware Update service completely.
+   ** foxconn: added custom carrier config setup for the T77W968 module.
+
+The following features which were backported to 1.16.x releases are also present
+in ModemManager 1.18.0:
+
+ * core: added support for the new 'WWAN' subsystem in Linux kernel 5.13,
+   enabling PCIe-only modules.
+ * core: The charset conversion methods rework, including the avoiding of the
+   iconv() //TRANSLIT extension support, which isn't available in all libc
+   implementations.
+ * qmi: the logic managing allowed/preferred modes was fixed for multimode
+   devices like the MC7304, making sure the acquisition order preference always
+   had the same items.
+ * serial: when modem is connected with AT+PPP, ignore forced disconnections, so
+   that we don't take ownership of the PPP port before pppd has released it.
+ * foxconn: added support for the T99W175 (SDX55) module, including built-in FCC
+   unlock procedure.
+ * foxconn: added new MBIM QDU firmware update method.
+
 
 ModemManager 1.16.0
 -------------------------------------------
@@ -274,6 +555,8 @@ in ModemManager 1.16.0:
  * cinterion: configure the PLAS9 to send URCs correctly.
  * quectel: add support for MBIM devices.
  * telit: add initial delay for AT ports to become responsive.
+ * udev: updated all AT/QCDM/GPS port type hints in all plugins to bind them to
+   TTY ports only.
 
 
 ModemManager 1.14.0

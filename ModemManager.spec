@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x3CAD53398973FFFA (aleksander@aleksander.es)
 #
 Name     : ModemManager
-Version  : 1.16.10
-Release  : 31
-URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.10.tar.xz
-Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.10.tar.xz
-Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.10.tar.xz.asc
+Version  : 1.18.8
+Release  : 32
+URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.8.tar.xz
+Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.8.tar.xz
+Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.8.tar.xz.asc
 Summary  : Common headers provided by ModemManager
 Group    : Development/Tools
 License  : GPL-2.0 LGPL-2.1
@@ -40,6 +40,7 @@ BuildRequires : pkgconfig(libsystemd)
 BuildRequires : pkgconfig(mbim-glib)
 BuildRequires : pkgconfig(polkit-gobject-1)
 BuildRequires : pkgconfig(qmi-glib)
+BuildRequires : pkgconfig(qrtr-glib)
 BuildRequires : vala
 
 %description
@@ -132,15 +133,15 @@ services components for the ModemManager package.
 
 
 %prep
-%setup -q -n ModemManager-1.16.10
-cd %{_builddir}/ModemManager-1.16.10
+%setup -q -n ModemManager-1.18.8
+cd %{_builddir}/ModemManager-1.18.8
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1628538572
+export SOURCE_DATE_EPOCH=1651698362
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -163,11 +164,11 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1628538572
+export SOURCE_DATE_EPOCH=1651698362
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/ModemManager
-cp %{_builddir}/ModemManager-1.16.10/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
-cp %{_builddir}/ModemManager-1.16.10/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
+cp %{_builddir}/ModemManager-1.18.8/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
+cp %{_builddir}/ModemManager-1.18.8/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
 %make_install
 %find_lang ModemManager
 ## install_append content
@@ -194,18 +195,17 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/lib/udev/rules.d/77-mm-gosuncn-port-types.rules
 /usr/lib/udev/rules.d/77-mm-haier-port-types.rules
 /usr/lib/udev/rules.d/77-mm-huawei-net-port-types.rules
+/usr/lib/udev/rules.d/77-mm-linktop-port-types.rules
 /usr/lib/udev/rules.d/77-mm-longcheer-port-types.rules
 /usr/lib/udev/rules.d/77-mm-mtk-port-types.rules
 /usr/lib/udev/rules.d/77-mm-nokia-port-types.rules
-/usr/lib/udev/rules.d/77-mm-pcmcia-device-blacklist.rules
+/usr/lib/udev/rules.d/77-mm-qcom-soc.rules
 /usr/lib/udev/rules.d/77-mm-quectel-port-types.rules
 /usr/lib/udev/rules.d/77-mm-sierra.rules
 /usr/lib/udev/rules.d/77-mm-simtech-port-types.rules
 /usr/lib/udev/rules.d/77-mm-telit-port-types.rules
 /usr/lib/udev/rules.d/77-mm-tplink-port-types.rules
 /usr/lib/udev/rules.d/77-mm-ublox-port-types.rules
-/usr/lib/udev/rules.d/77-mm-usb-device-blacklist.rules
-/usr/lib/udev/rules.d/77-mm-usb-serial-adapters-greylist.rules
 /usr/lib/udev/rules.d/77-mm-x22x-port-types.rules
 /usr/lib/udev/rules.d/77-mm-zte-port-types.rules
 /usr/lib/udev/rules.d/80-mm-candidate.rules
@@ -213,13 +213,25 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 %files data
 %defattr(-,root,root,-)
 /usr/lib64/girepository-1.0/ModemManager-1.0.typelib
-/usr/share/ModemManager/mm-foxconn-carrier-mapping.conf
+/usr/share/ModemManager/connection.available.d/99-log-event
+/usr/share/ModemManager/fcc-unlock.available.d/03f0:4e1d
+/usr/share/ModemManager/fcc-unlock.available.d/105b
+/usr/share/ModemManager/fcc-unlock.available.d/105b:e0ab
+/usr/share/ModemManager/fcc-unlock.available.d/1199
+/usr/share/ModemManager/fcc-unlock.available.d/1199:9079
+/usr/share/ModemManager/fcc-unlock.available.d/1eac
+/usr/share/ModemManager/fcc-unlock.available.d/1eac:1001
+/usr/share/ModemManager/fcc-unlock.available.d/413c:81a3
+/usr/share/ModemManager/fcc-unlock.available.d/413c:81a8
+/usr/share/ModemManager/mm-foxconn-t77w968-carrier-mapping.conf
+/usr/share/ModemManager/mm-foxconn-t99w175-carrier-mapping.conf
 /usr/share/bash-completion/completions/mmcli
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Bearer.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Call.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Modem.Firmware.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Modem.Location.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Modem.Messaging.xml
+/usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Modem.Modem3gpp.ProfileManager.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Modem.Modem3gpp.Ussd.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Modem.Modem3gpp.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Modem.ModemCdma.xml
@@ -246,6 +258,7 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/include/ModemManager/ModemManager-version.h
 /usr/include/ModemManager/ModemManager.h
 /usr/include/libmm-glib/libmm-glib.h
+/usr/include/libmm-glib/mm-3gpp-profile.h
 /usr/include/libmm-glib/mm-bearer-ip-config.h
 /usr/include/libmm-glib/mm-bearer-properties.h
 /usr/include/libmm-glib/mm-bearer-stats.h
@@ -254,6 +267,7 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/include/libmm-glib/mm-call-properties.h
 /usr/include/libmm-glib/mm-call.h
 /usr/include/libmm-glib/mm-cdma-manual-activation-properties.h
+/usr/include/libmm-glib/mm-compat.h
 /usr/include/libmm-glib/mm-enums-types.h
 /usr/include/libmm-glib/mm-errors-types.h
 /usr/include/libmm-glib/mm-firmware-properties.h
@@ -272,6 +286,7 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/include/libmm-glib/mm-location-gps-nmea.h
 /usr/include/libmm-glib/mm-location-gps-raw.h
 /usr/include/libmm-glib/mm-manager.h
+/usr/include/libmm-glib/mm-modem-3gpp-profile-manager.h
 /usr/include/libmm-glib/mm-modem-3gpp-ussd.h
 /usr/include/libmm-glib/mm-modem-3gpp.h
 /usr/include/libmm-glib/mm-modem-cdma.h
@@ -288,6 +303,7 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/include/libmm-glib/mm-object.h
 /usr/include/libmm-glib/mm-pco.h
 /usr/include/libmm-glib/mm-signal.h
+/usr/include/libmm-glib/mm-sim-preferred-network.h
 /usr/include/libmm-glib/mm-sim.h
 /usr/include/libmm-glib/mm-simple-connect-properties.h
 /usr/include/libmm-glib/mm-simple-status.h
@@ -325,6 +341,7 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/lib64/ModemManager/libmm-plugin-option-hso.so
 /usr/lib64/ModemManager/libmm-plugin-option.so
 /usr/lib64/ModemManager/libmm-plugin-pantech.so
+/usr/lib64/ModemManager/libmm-plugin-qcom-soc.so
 /usr/lib64/ModemManager/libmm-plugin-quectel.so
 /usr/lib64/ModemManager/libmm-plugin-samsung.so
 /usr/lib64/ModemManager/libmm-plugin-sierra-legacy.so
@@ -346,7 +363,7 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/lib64/ModemManager/libmm-shared-telit.so
 /usr/lib64/ModemManager/libmm-shared-xmm.so
 /usr/lib64/libmm-glib.so.0
-/usr/lib64/libmm-glib.so.0.7.0
+/usr/lib64/libmm-glib.so.0.8.0
 
 %files license
 %defattr(0644,root,root,0755)
