@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x3CAD53398973FFFA (aleksander@aleksander.es)
 #
 Name     : ModemManager
-Version  : 1.18.8
-Release  : 32
-URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.8.tar.xz
-Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.8.tar.xz
-Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.8.tar.xz.asc
+Version  : 1.18.10
+Release  : 33
+URL      : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.10.tar.xz
+Source0  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.10.tar.xz
+Source1  : https://www.freedesktop.org/software/ModemManager/ModemManager-1.18.10.tar.xz.asc
 Summary  : Common headers provided by ModemManager
 Group    : Development/Tools
 License  : GPL-2.0 LGPL-2.1
@@ -133,15 +133,15 @@ services components for the ModemManager package.
 
 
 %prep
-%setup -q -n ModemManager-1.18.8
-cd %{_builddir}/ModemManager-1.18.8
+%setup -q -n ModemManager-1.18.10
+cd %{_builddir}/ModemManager-1.18.10
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1651698362
+export SOURCE_DATE_EPOCH=1656353688
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -164,11 +164,11 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1651698362
+export SOURCE_DATE_EPOCH=1656353688
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/ModemManager
-cp %{_builddir}/ModemManager-1.18.8/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
-cp %{_builddir}/ModemManager-1.18.8/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
+cp %{_builddir}/ModemManager-1.18.10/COPYING %{buildroot}/usr/share/package-licenses/ModemManager/4cc77b90af91e615a64ae04893fdffa7939db84c
+cp %{_builddir}/ModemManager-1.18.10/COPYING.LIB %{buildroot}/usr/share/package-licenses/ModemManager/01a6b4bf79aca9b556822601186afab86e8c4fbf
 %make_install
 %find_lang ModemManager
 ## install_append content
@@ -224,7 +224,6 @@ ln -s ModemManager.service %{buildroot}/usr/lib/systemd/system/dbus-org.freedesk
 /usr/share/ModemManager/fcc-unlock.available.d/413c:81a3
 /usr/share/ModemManager/fcc-unlock.available.d/413c:81a8
 /usr/share/ModemManager/mm-foxconn-t77w968-carrier-mapping.conf
-/usr/share/ModemManager/mm-foxconn-t99w175-carrier-mapping.conf
 /usr/share/bash-completion/completions/mmcli
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Bearer.xml
 /usr/share/dbus-1/interfaces/org.freedesktop.ModemManager1.Call.xml
